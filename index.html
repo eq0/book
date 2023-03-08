@@ -20,13 +20,13 @@
 <body>
     <div x-data="router()">
         <!-- You can pass in a function name -->
-        <template x-route="/" x-view="home.html"></template>
-        <template x-route="/lessons" x-view="lessons.html"></template>
-        <template x-route="/settings" x-view="settings.html"></template>
+        <template x-route="" x-view="home.html"></template>
+        <template x-route="lessons" x-view="lessons.html"></template>
+        <template x-route="settings" x-view="settings.html"></template>
         <!-- Or an anonymous/arrow function -->
-        <template x-route="/home" x-handler="(ctx) => ctx.redirect('/')"></template>
+        <template x-route="home" x-handler="(ctx) => ctx.redirect('/')"></template>
         <!-- Or even an array of multiple function names/anonymous functions! -->
-        <template x-route="/post/:name" x-view="post.html"></template>
+        <template x-route="post/:name" x-view="post.html"></template>
         <!-- 404 handler -->
         <template x-route="notfound" x-handler="notfound"></template>
     </div>
@@ -53,8 +53,8 @@
     <script>
             window.addEventListener('pinecone-end', () => {
                 console.log(window.location.hash.split("/")[1]);
-                if(window.location.hash.split("/")[2] == "post"){
-                    fetch("mdcontent/"+window.location.hash.split("/")[2]+".md")
+                if(window.location.hash.split("/")[1] == "post"){
+                    fetch("mdcontent/"+window.location.hash.split("/")[1]+".md")
                     .then(response => response.text())
                     .then(result => {
                         content = yamlFront.loadFront(result);
