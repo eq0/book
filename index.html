@@ -20,9 +20,9 @@
 <body>
     <div x-data="router()">
         <!-- You can pass in a function name -->
-        <template x-route="/" x-view="/home.html"></template>
-        <template x-route="/lessons" x-view="/lessons.html"></template>
-        <template x-route="/settings" x-view="/settings.html"></template>
+        <template x-route="/" x-view="./home.html"></template>
+        <template x-route="lessons" x-view="./lessons.html"></template>
+        <template x-route="./settings" x-view="settings.html"></template>
         <!-- Or an anonymous/arrow function -->
         <template x-route="/home" x-handler="(ctx) => ctx.redirect('/')"></template>
         <!-- Or even an array of multiple function names/anonymous functions! -->
