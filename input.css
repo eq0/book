@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+    #content h1 {
+        @apply text-4xl;
+    }
+    #content h2 {
+        @apply text-3xl;
+    }
+    #content h3 {
+        @apply text-2xl;
+    }
+    #content ul {
+        @apply list-disc list-inside;
+    }
+  }

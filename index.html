@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/js-yaml@3.10.0/dist/js-yaml.js"></script>
+    <script src="./yamlFront.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pinecone-router@2.x.x/dist/router.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pinecone-router-middleware-views@2.x.x/dist/views.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <title>PHP Lab</title>
+</head>
+<body>
+    <div x-data="router()">
+        <!-- You can pass in a function name -->
+        <template x-route="/" x-view="/home.html"></template>
+        <template x-route="/lessons" x-view="/lessons.html"></template>
+        <template x-route="/settings" x-view="/settings.html"></template>
+        <!-- Or an anonymous/arrow function -->
+        <template x-route="/home" x-handler="(ctx) => ctx.redirect('/')"></template>
+        <!-- Or even an array of multiple function names/anonymous functions! -->
+        <template x-route="/post/:name" x-view="/post.html"></template>
+        <!-- 404 handler -->
+        <template x-route="notfound" x-handler="notfound"></template>
+    </div>
+    <div class="w-full h-screen">
+        <div id="app"></div>
+        <section id="bottom-navigation" class="block fixed inset-x-0 bottom-0 z-10 bg-white shadow">
+            <div id="tabs" class="flex justify-between mb-2">
+                <a href="/" class="w-full focus:text-teal-500 hover:text-teal-500 justify-center inline-block text-center pt-2 pb-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" class="inline-block mb-1" ><path d="M10 20v-6h4v6h5v-8h3L12 3L2 12h3v8z"/></svg>
+                    <span class="tab tab-home block text-xs">الرئيسيّة</span>
+                </a>
+                <a href="/lessons" class="w-full focus:text-teal-500 hover:text-teal-500 justify-center inline-block text-center pt-2 pb-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" class="inline-block mb-1" ><path d="M22 7h-9v2h9V7zm0 8h-9v2h9v-2zM5.54 11L2 7.46l1.41-1.41l2.12 2.12l4.24-4.24l1.41 1.41L5.54 11zm0 8L2 15.46l1.41-1.41l2.12 2.12l4.24-4.24l1.41 1.41L5.54 19z"/></svg>
+                    <span class="tab tab-home block text-xs">الدروس</span>
+                </a>
+                <a href="/settings" class="w-full focus:text-teal-500 hover:text-teal-500 justify-center inline-block text-center pt-2 pb-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" class="inline-block mb-1"><path d="M19.14 12.94c.04-.3.06-.61.06-.94c0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6s3.6 1.62 3.6 3.6s-1.62 3.6-3.6 3.6z"/></svg>
+                    <span class="tab tab-home block text-xs">الاعدادات</span>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+            window.addEventListener('pinecone-end', () => {
+                console.log(window.location.hash.split("/")[1]);
+                if(window.location.hash.split("/")[1] == "post"){
+                    fetch("mdcontent/"+window.location.hash.split("/")[2]+".md")
+                    .then(response => response.text())
+                    .then(result => {
+                        content = yamlFront.loadFront(result);
+                        document.getElementById('content').innerHTML = marked.parse(content.__content);
+                    });
+                }
+            })
+        document.addEventListener('alpine:initialized', () => {
+            window.PineconeRouter.settings.hash = true; // use hash routing
+            //window.PineconeRouter.settings.basePath = '/'; // set the base for the URL, doesn't work with hash routing
+        })
+        function router() {
+        return {
+            home(context) {
+            document.querySelector('#app').innerHTML = `<h1>Home</h1>`;
+            },
+            checkName(context) {
+            // if the name is "home" go to the home page.
+            if (context.params.name.toLowerCase() == 'home') {
+                // redirecting is done by returning the context.redirect method.
+                return context.redirect('/');
+            }
+            },
+            notfound(context) {
+            document.querySelector('#app').innerHTML = `<div class="h-screen flex flex-col items-center justify-center">
+                                        <h1 class="text-3xl">الصفحة غير موجودة</h1>
+                                    </div>`;
+            },
+        };
+        }
+    </script>
+</body>
+</html>
